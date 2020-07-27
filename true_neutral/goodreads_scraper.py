@@ -128,7 +128,7 @@ def get_single_book(url: str, user_agent: str) -> DefaultDict[str, str]:
         return book
 
 
-def get_id(url: str) -> str:
+def get_id(url: str) -> int:
     """
     Function to get the id of a book from a GoodReads book page,
     https://www.goodreads.com/book/show/book-name. The id is part of the
@@ -141,13 +141,13 @@ def get_id(url: str) -> str:
 
     Returns:
     ========
-    book_id: str
+    book_id: int
         Id of the book
     """
 
     book_id = re.sub(".*/book/show/\\s*|-.*", "", url)
     book_id = re.sub("\\..*", "", book_id)
-    return book_id
+    return int(book_id)
 
 
 def get_title(book: BeautifulSoup) -> str:
@@ -170,7 +170,7 @@ def get_title(book: BeautifulSoup) -> str:
     return title
 
 
-def get_authors(book: BeautifulSoup) -> str:
+def get_authors(book: BeautifulSoup) -> List[str]:
     """
     Function to get the author(s) of the book.
 
@@ -182,17 +182,15 @@ def get_authors(book: BeautifulSoup) -> str:
 
     Returns:
     ========
-    authors: str
+    authors: List[str]
         Author(s) of the book
     """
 
-    authors = ", ".join(
-        [a.text.strip() for a in book.find_all("a", class_="authorName")]
-    )
+    authors = [a.text.strip() for a in book.find_all("a", class_="authorName")]
     return authors
 
 
-def get_genres(book: BeautifulSoup) -> str:
+def get_genres(book: BeautifulSoup) -> List[str]:
     """
     Function to get the genre(s) of the book.
 
@@ -204,24 +202,22 @@ def get_genres(book: BeautifulSoup) -> str:
 
     Returns:
     ========
-    genres: str
+    genres: List[str]
         Genre(s) of the book
     """
 
-    genres = ", ".join(
-        [
-            g.text.strip()
-            for g in book.find_all(
-                "a", class_="bookPageGenreLink", href=re.compile("/genres/*")
-            )
-        ]
-    )
+    genres = [
+        g.text.strip()
+        for g in book.find_all(
+            "a", class_="bookPageGenreLink", href=re.compile("/genres/*")
+        )
+    ]
     return genres
 
 
 def get_description(book: BeautifulSoup) -> str:
     """
-    Function to get book description from Rising Shadow.
+    Function to get book description from GoodReads.
 
     Parameters:
     ===========
@@ -232,13 +228,14 @@ def get_description(book: BeautifulSoup) -> str:
     Returns:
     ========
     desc: str
-        Description of the book given on Rising Shadow.
+        Description of the book given on GoodReads.
     """
 
     desc = ""
     try:
         desc_list = book.find("div", id="descriptionContainer").find_all("span")
-        desc = desc_list[-1].text.strip()
+        if desc_list:
+            desc = desc_list[-1].text.strip()
     except Exception as ex:
         print(str(ex))
     finally:
@@ -253,12 +250,12 @@ def main(list_name: str, page_range: Tuple[int, int], user_agent: str, out: str)
 
 
 if __name__ == "__main__":
-    list_name = "146766.Emma_Straub_s_Dramas_to_Forget_Your_Own_Troubles"
-    page_range = (1, 1)
+    list_name = "3.Best_Science_Fiction_Fantasy_Books"
+    page_range = (1, 5)
 
     user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36"
 
     Path("data").mkdir(parents=True, exist_ok=True)
-    out = "data/goodreads_emma_straub_drama.jsonl"
+    out = "data/goodreads_best_science_fiction_fantasy_01_05.jsonl"
 
     main(list_name, page_range, user_agent, out)
