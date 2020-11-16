@@ -1,0 +1,31 @@
+#+TITLE: true neutral
+#+OPTIONS: num:nil author:nil html-postamble:nil
+
+This package provides a content based book recommendation system, that
+recommends new books based on how similar are their summaries (or blurbs) to a
+given book. This utilizes the Doc2Vec model, which uses shallow neural networks
+to represent each document as a high-dimensional vector, and gives
+recommendations based on the cosine similarity of those vectors.
+
+A model trained on science fiction and fantasy books, sourced from the [[http://www.cs.cmu.edu/~dbamman/booksummaries.html][CMU Book
+Summary Dataset]], is included. Please check [[file:sff_recommender.org]] or the
+rendered html file to see how to use it. However the focus is on providing
+composable functions that the user can use to generate and analyze datasets,
+build and train models with generated or available datasets, and use the models
+for recommending books.
+
+* License
+
+Other than the contents of =true_neutral/data= folder, everything is available
+under the MIT license. The contents of =true_neutral/data= which includes data
+sourced from [[http://www.cs.cmu.edu/~dbamman/booksummaries.html][CMU Book Summary Dataset]], and the Doc2Vec model trained on that
+data, are available under a [[http://creativecommons.org/licenses/by-sa/3.0/us/legalcode][Creative Commons Attribution-ShareAlike]] license.
+
+* Why 'true neutral'?
+
+This project was inspired by [[https://github.com/kartheikiyer/chaotic_neutral][chaotic neutral]].
+
+* To Do
+
+- [ ] Add webscrapers to generate book datasets.
+- [ ] Add an analysis of the [[http://www.cs.cmu.edu/~dbamman/booksummaries.html][CMU Book Summary Dataset]].
