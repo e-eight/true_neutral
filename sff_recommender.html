@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- 2020-11-16 Mon 17:11 -->
+<!-- 2020-11-16 Mon 17:54 -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Speculative fiction recommender</title>
@@ -227,12 +227,12 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org4b75391">Data</a></li>
-<li><a href="#org4fda28e">The model</a></li>
-<li><a href="#org53cfa81">Similar books</a>
+<li><a href="#org25ecc73">Data</a></li>
+<li><a href="#orgf602e10">The model</a></li>
+<li><a href="#org5545a6e">Similar books</a>
 <ul>
-<li><a href="#org3bc2919">Without summary</a></li>
-<li><a href="#orgae7786d">With summary</a></li>
+<li><a href="#org35fb8b2">Without summary</a></li>
+<li><a href="#org9e95158">With summary</a></li>
 </ul>
 </li>
 </ul>
@@ -244,17 +244,16 @@
 
 <span style="color: #fb4934;">import</span> gensim
 <span style="color: #fb4934;">import</span> pandas <span style="color: #fb4934;">as</span> pd
-<span style="color: #fb4934;">import</span> numpy <span style="color: #fb4934;">as</span> np
 <span style="color: #fb4934;">from</span> true_neutral <span style="color: #fb4934;">import</span> *
 </pre>
 </div>
 
-<div id="outline-container-org4b75391" class="outline-2">
-<h2 id="org4b75391">Data</h2>
-<div class="outline-text-2" id="text-org4b75391">
+<div id="outline-container-org25ecc73" class="outline-2">
+<h2 id="org25ecc73">Data</h2>
+<div class="outline-text-2" id="text-org25ecc73">
 <p>
 For demonstration I will use science fiction and fantasy books from the
-excellent <a href="http://www.cs.cmu.edu/~dbamman/booksummaries.html">CMU Book Summary Dataset</a> (<a href="https://arxiv.org/abs/1305.1319">arXiv:1305.1319 [cs.CL]​</a>). Though curated,
+excellent <a href="http://www.cs.cmu.edu/~dbamman/booksummaries.html">CMU Book Summary Dataset</a> (<a href="https://arxiv.org/abs/1305.1319">arXiv:1305.1319</a>). Though curated,
 the dataset has many missing entries, and books from many other genres. For the
 present purposes I have removed books with missing values, and selected science
 fiction and fantasy books published between 1722 and 2012.
@@ -266,7 +265,7 @@ fiction and fantasy books published between 1722 and 2012.
 </pre>
 </div>
 
-<pre class="example" id="org1107556">
+<pre class="example" id="orgbb95026">
    Wikipedia ID                              Title           Author  \
 0           843                 A Clockwork Orange  Anthony Burgess
 1          4081    Blade Runner 3: Replicant Night      K. W. Jeter
@@ -291,9 +290,9 @@ fiction and fantasy books published between 1722 and 2012.
 </div>
 </div>
 
-<div id="outline-container-org4fda28e" class="outline-2">
-<h2 id="org4fda28e">The model</h2>
-<div class="outline-text-2" id="text-org4fda28e">
+<div id="outline-container-orgf602e10" class="outline-2">
+<h2 id="orgf602e10">The model</h2>
+<div class="outline-text-2" id="text-orgf602e10">
 <p>
 I have used a Doc2Vec model with a vector size with 50 dimensions and 40
 training epochs (for details check this <a href="https://radimrehurek.com/gensim/auto_examples/tutorials/run_doc2vec_lee.html#training-the-model">tutorial</a>). The trained model is saved in
@@ -309,25 +308,25 @@ save_trained_model<span style="color: #fb4934;">(</span>*model_data, <span style
 </div>
 </div>
 
-<div id="outline-container-org53cfa81" class="outline-2">
-<h2 id="org53cfa81">Similar books</h2>
-<div class="outline-text-2" id="text-org53cfa81">
+<div id="outline-container-org5545a6e" class="outline-2">
+<h2 id="org5545a6e">Similar books</h2>
+<div class="outline-text-2" id="text-org5545a6e">
 <p>
 The correlation factor shows how close the model thinks the books are, which it
 determines using cosine similarity.
 </p>
 </div>
 
-<div id="outline-container-org3bc2919" class="outline-3">
-<h3 id="org3bc2919">Without summary</h3>
-<div class="outline-text-3" id="text-org3bc2919">
+<div id="outline-container-org35fb8b2" class="outline-3">
+<h3 id="org35fb8b2">Without summary</h3>
+<div class="outline-text-3" id="text-org35fb8b2">
 <div class="org-src-container">
 <pre class="src src-jupyter-python"><span style="color: #8ec07c;">books</span> = get_similar_books<span style="color: #fb4934;">(</span>model_data, <span style="color: #b8bb26;">"A Clockwork Orange"</span><span style="color: #fb4934;">)</span>
 pprint_books<span style="color: #fb4934;">(</span>books<span style="color: #fb4934;">)</span>
 </pre>
 </div>
 
-<pre class="example" id="org287fef6">
+<pre class="example" id="org167ca6f">
 Heart of a Dog by Mikhail Bulgakov
 Genres: Science Fiction, Speculative fiction
 Correlation: 0.64
@@ -380,16 +379,16 @@ Correlation: 0.55
 </div>
 </div>
 
-<div id="outline-container-orgae7786d" class="outline-3">
-<h3 id="orgae7786d">With summary</h3>
-<div class="outline-text-3" id="text-orgae7786d">
+<div id="outline-container-org9e95158" class="outline-3">
+<h3 id="org9e95158">With summary</h3>
+<div class="outline-text-3" id="text-org9e95158">
 <div class="org-src-container">
 <pre class="src src-jupyter-python"><span style="color: #8ec07c;">books</span> = get_similar_books<span style="color: #fb4934;">(</span>model_data, <span style="color: #b8bb26;">"Children of Dune"</span>, nsim=5, show_summary=<span style="color: #d3869b;">True</span><span style="color: #fb4934;">)</span>
 pprint_books<span style="color: #fb4934;">(</span>books<span style="color: #fb4934;">)</span>
 </pre>
 </div>
 
-<pre class="example" id="orgdef2227">
+<pre class="example" id="orgd2a4571">
 Dune Messiah by Frank Herbert
 Genres: Science Fiction, Speculative fiction, Children's literature, Fiction, Novel
 Correlation: 0.83

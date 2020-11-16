@@ -16,7 +16,7 @@ from true_neutral import *
 * Data
 
 For demonstration I will use science fiction and fantasy books from the
-excellent [[http://www.cs.cmu.edu/~dbamman/booksummaries.html][CMU Book Summary Dataset]] ([[https://arxiv.org/abs/1305.1319][arXiv:1305.1319 [cs.CL]​]]). Though curated,
+excellent [[http://www.cs.cmu.edu/~dbamman/booksummaries.html][CMU Book Summary Dataset]] ([[https://arxiv.org/abs/1305.1319][arXiv:1305.1319]]). Though curated,
 the dataset has many missing entries, and books from many other genres. For the
 present purposes I have removed books with missing values, and selected science
 fiction and fantasy books published between 1722 and 2012.

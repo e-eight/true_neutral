@@ -9,7 +9,7 @@ recommendations based on the cosine similarity of those vectors.
 
 A model trained on science fiction and fantasy books, sourced from the [[http://www.cs.cmu.edu/~dbamman/booksummaries.html][CMU Book
 Summary Dataset]], is included. Please check [[file:sff_recommender.org]] or the
-rendered html file to see how to use it. However the focus is on providing
+rendered [[https://nbviewer.jupyter.org/github/e-eight/true_neutral/blob/master/sff_recommender.html][html file]] to see how to use it. However the focus is on providing
 composable functions that the user can use to generate and analyze datasets,
 build and train models with generated or available datasets, and use the models
 for recommending books.
