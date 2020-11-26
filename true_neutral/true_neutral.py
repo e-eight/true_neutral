@@ -104,17 +104,17 @@ def load_trained_model(fname_tag: str):
     """
 
     model = gensim.models.Word2Vec.load(fname_tag + ".trainedmodel")
-    with open(fname + "_titles.pkl", "rb") as f:
+    with open(fname_tag + "_titles.pkl", "rb") as f:
         titles = pickle.load(f)
-    with open(fname + "_authors.pkl", "rb") as f:
+    with open(fname_tag + "_authors.pkl", "rb") as f:
         authors = pickle.load(f)
-    with open(fname + "_genres.pkl", "rb") as f:
+    with open(fname_tag + "_genres.pkl", "rb") as f:
         genres = pickle.load(f)
-    with open(fname + "_summaries.pkl", "rb") as f:
+    with open(fname_tag + "_summaries.pkl", "rb") as f:
         summaries = pickle.load(f)
-    with open(fname + "_train_corpus.pkl", "rb") as f:
+    with open(fname_tag + "_train_corpus.pkl", "rb") as f:
         train_corpus = pickle.load(f)
-    with open(fname + "_test_corpus.pkl", "rb") as f:
+    with open(fname_tag + "_test_corpus.pkl", "rb") as f:
         test_corpus = pickle.load(f)
     return model, titles, authors, genres, summaries, train_corpus, test_corpus
 
