@@ -1,0 +1,202 @@
+# -*- org-src-preserve-indentation: t; org-edit-src-content: 0; -*-
+#+TITLE: Speculative fiction recommender
+#+OPTIONS: num:nil author:nil html-postamble:nil
+#+PROPERTY: header-args :tangle yes :jupyter-python :session py :kernel true-neutral :async yes :results output replace :exports both :eval no-export
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/setup/theme-readtheorg.setup
+
+#+begin_src jupyter-python :results none
+%load_ext autoreload
+%autoreload 2
+
+import gensim
+import pandas as pd
+from true_neutral import *
+#+end_src
+
+* Data
+
+For demonstration I will use science fiction and fantasy books from the
+excellent [[http://www.cs.cmu.edu/~dbamman/booksummaries.html][CMU Book Summary Dataset]] ([[https://arxiv.org/abs/1305.1319][arXiv:1305.1319]]). Though curated,
+the dataset has many missing entries, and books from many other genres. For the
+present purposes I have removed books with missing values, and selected science
+fiction and fantasy books published between 1722 and 2012.
+
+#+begin_src jupyter-python
+data = pd.read_pickle("true_neutral/data/sff_booksummaries.pkl")
+print(data.head())
+#+end_src
+
+#+RESULTS:
+#+begin_example
+   Wikipedia ID                              Title           Author  \
+0           843                 A Clockwork Orange  Anthony Burgess
+1          4081    Blade Runner 3: Replicant Night      K. W. Jeter
+2          4082  Blade Runner 2: The Edge of Human      K. W. Jeter
+3          6628                   Children of Dune    Frank Herbert
+4          6630                  Chapterhouse Dune    Frank Herbert
+
+                                              Genres  \
+0  Science Fiction, Novella, Speculative fiction,...
+1               Science Fiction, Speculative fiction
+2               Science Fiction, Speculative fiction
+3  Science Fiction, Speculative fiction, Children...
+4  Science Fiction, Speculative fiction, Children...
+
+                                             Summary  Year
+0   Alex, a teenager living in near-future Englan...  1962
+1   Living on Mars, Deckard is acting as a consul...  1996
+2   Beginning several months after the events in ...  1995
+3   Nine years after Emperor Paul Muad'dib walked...  1976
+4   The situation is desperate for the Bene Gesse...  1985
+#+end_example
+
+* The model
+
+I have used a Doc2Vec model with a vector size with 50 dimensions and 40
+training epochs (for details check this [[https://radimrehurek.com/gensim/auto_examples/tutorials/run_doc2vec_lee.html#training-the-model][tutorial]]). The trained model is saved in
+the =true_neutral/data/= folder.
+
+#+begin_src jupyter-python :results none
+model = gensim.models.doc2vec.Doc2Vec(vector_size=50, min_count=2, epochs=40,)
+model_data = train_model(model, data)
+save_trained_model(model_data, "cmu_sff", "true_neutral/data/")
+#+end_src
+
+* Similar books
+
+The correlation factor shows how close the model thinks the books are, which it
+determines using cosine similarity.
+
+** Without summary
+
+#+begin_src jupyter-python
+books = get_similar_books_by_name(model_data, "A Clockwork Orange")
+pprint_books(books)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Heart of a Dog by Mikhail Bulgakov
+Genres: Science Fiction, Speculative fiction
+Correlation: 0.64
+
+
+The Damnation Game by Clive Barker
+Genres: Speculative fiction, Fantasy
+Correlation: 0.60
+
+
+Market Forces by Richard Morgan
+Genres: Science Fiction, Speculative fiction, Fiction
+Correlation: 0.59
+
+
+Martian Time-Slip by Philip K. Dick
+Genres: Science Fiction, Speculative fiction, Fiction, Novel
+Correlation: 0.58
+
+
+Next by Michael Crichton
+Genres: Science Fiction, Satire, Techno-thriller, Utopian and dystopian fiction, Fiction
+Correlation: 0.57
+
+
+Behold the Man by Michael Moorcock
+Genres: Science Fiction, Speculative fiction, Fantasy, Fiction
+Correlation: 0.56
+
+
+Camp Concentration by Thomas M. Disch
+Genres: Science Fiction, Speculative fiction, Fiction, Dystopia
+Correlation: 0.56
+
+
+Some of Your Blood by Theodore Sturgeon
+Genres: Science Fiction, Horror, Fiction
+Correlation: 0.56
+
+
+Gladiator at Law by Cyril M. Kornbluth
+Genres: Science Fiction, Speculative fiction
+Correlation: 0.56
+
+
+The Cabinet of Curiosities by Lincoln Child
+Genres: Thriller, Science Fiction, Speculative fiction, Fiction
+Correlation: 0.55
+#+end_example
+
+** With summary
+
+#+begin_src jupyter-python
+books = get_similar_books(model_data, "Children of Dune", nsim=5)
+pprint_books(books, show_summary=True)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Dune Messiah by Frank Herbert
+Genres: Science Fiction, Speculative fiction, Children's literature, Fiction, Novel
+Correlation: 0.83
+Summary:
+Paul has refused to father a child with Irulan (or even touch her), but his Fremen concubine Chani has also failed to produce an heir, causing tension within his monarchy.
+The Tleilaxu Face Dancer Scytale gives Paul a gift he cannot resist: a Tleilaxu-grown ghola of the deceased Duncan Idaho, Paul's childhood teacher and friend, now called "Hayt".
+Furthermore, Paul's acceptance of the gift weakens his support among the Fremen, who see the Tleilaxu and their tools as unclean.
+Bijaz programs Hayt to offer Paul a bargain when Chani dies: Chani's rebirth as a ghola, and the hope that Duncan Idaho's memories might be reawakened, in return for Paul sacrificing the throne and going into exile.
+Bijaz also implants a compulsion that will force Hayt to attempt to kill Paul, given the appropriate circumstances.
+Paul refuses to submit to the possibility that the Tleilaxu might program Chani in some diabolical way, and Scytale threatens the infants with a knife while he negotiates with Alia.
+Duncan notes the irony that Paul and Chani's deaths had enabled them to triumph against their enemies, and that Paul has escaped deification by walking into the desert as a man, while guaranteeing Fremen support for the Atreides line.
+
+
+Dune: House Harkonnen by Kevin J. Anderson
+Genres: Science Fiction, Speculative fiction
+Correlation: 0.80
+Summary:
+Leto and his friends, Kailea and Rhombur Vernius, are still struggling to liberate the siblings' former homeworld, but they have made little progress so far.
+Kailea soon gives birth to Leto's son, Victor.
+Kailea's lady-in-waiting, Chiara, is actually a Harkonnen agent sent to poison Kailea's mind against Leto.
+Matters are complicated further with the arrival of Jessica, a Bene Gesserit and the secret daughter of Reverend Mother Gaius Helen Mohiam and Baron Vladimir Harkonnen (though Jessica herself is unaware of her parentage).
+Jessica is presented to Leto as a gift from the Bene Gesserit, although the sisterhood has the ulterior motive of using the pair in their breeding program.
+Fearing that Leto will guess that she is responsible for the death of their son and driven by guilt, Kailea kills her lady-in-waiting and then commits suicide by jumping out a window.
+The Tleilaxu offer to grow a ghola of Leto's deceased son in exchange for the barely alive body of Rhombur Vernius.
+Leto and Jessica fall deeply in love, leading Jessica to decide to conceive a son for Leto's sake, directly disobeying the Bene Gesserit's order that she have a daughter.
+Gurney finally manages to escape by stowing himself away in a shipment of the ore, which happens to be a gift from Leto Atreides to his concubine Kailea.
+
+
+Dune by Frank Herbert
+Genres: Conspiracy fiction, Science Fiction, Philosophy, Adventure novel, Planetary romance, Fiction, Military science fiction
+Correlation: 0.78
+Summary:
+The Emperor instead uses the centuries-old feud between House Atreides and House Harkonnen to disguise his assault, enlisting the brilliant and power-hungry Baron Vladimir Harkonnen in his plan to trap and eliminate the Atreides.
+Leto's control of the only planet capable of spice production would increase the power of House Atreides, which has not, historically, been influential or wealthy.
+Both the Emperor and the Baron Harkonnen show increasing concern at the fervor of religious fanaticism shown on Arrakis for this "Muad'Dib", not guessing that this leader is the presumed-dead Paul.
+Completely loyal to the Atreides, Gurney is convinced that Jessica is the traitor who caused the House's downfall, and nearly kills her before being stopped by Paul.
+In an Imperial attack on a Fremen settlement, Paul and Chani's son Leto is killed, and the four-year-old Alia is captured by Sardaukar and brought to the planet's capital Arrakeen, where the Baron Harkonnen is attempting to thwart the Fremen jihad under the close watch of the Emperor.
+The Emperor is surprised at Alia's defiance of his power and her confidence in her brother, whom she reveals to be Paul Atreides.
+Paul quickly overtakes the city's defenses and confronts the Emperor, threatening to destroy the spice, thereby ending space travel and crippling both Imperial power and the Bene Gesserit in one blow.
+However, despite being Emperor of the Known Universe, Paul realizes that he will not be able to stop the jihad he has seen in his visions, his legendary status among the Fremen having grown past the point where he can control it.
+
+
+God Emperor of Dune by Frank Herbert
+Genres: Science Fiction, Speculative fiction, Children's literature, Fiction
+Correlation: 0.78
+Summary:
+The seemingly immortal God Emperor Leto II has ruled his Empire for more than 3,500 years, his lifespan lengthened due to his decision in Children of Dune to merge his human body with sandtrout, the haploid phase of the giant sandworms of Arrakis.
+Leto has employed a series of gholas grown from the cells of Duncan Idaho, the faithful Swordmaster of House Atreides.
+Although Leto knows the important purpose of Siona, as long as she doesn't serve the "Golden Path" she would be expendable, and he would have to take measures for the breeding paths that he would have to take to replace her.
+For her part, Hwi desires nothing more than to serve the God Emperor, and she quickly becomes a confidante, finally expressing her love of Leto.
+Through discussions with Moneo and Leto, Duncan learns about Leto's transformation, the Fish Speakers, and the oppressive measures Leto takes to maintain his absolute control over the Empire.
+Leto and Hwi decide to marry, and lead a wedding procession from Leto's Little Citadel to Tuono Village, where Duncan and Siona have been sent.
+While crossing the Idaho River, Siona orders Nayla to cut the supports of the bridge with a lasgun, spilling Moneo, Hwi, Leto, and a number of courtiers into the jagged rocks in the canyon below.
+In a final conversation with Siona and Duncan, Leto reveals that Siona is the embodiment of the Golden Path, a human completely shielded from prescient view.
+After revealing the location of his secret spice hoard, Leto dies, leaving Duncan and Siona to face the task of managing the empire.
+
+
+Paul of Dune by Kevin J. Anderson
+Genres: Science Fiction, Speculative fiction
+Correlation: 0.74
+Summary:
+House Ecaz of Ecaz and House Moritani of Grumman are embroiled in a generations-long feud, and an Atreides-Ecazi alliance is set to be formalized by Leto's marriage to the Archduke Armand Ecaz's daughter Illesa.
+Leto and Armand lead a retaliatory attack on Grumman, not realizing that the Moritani forces have been supplemented by troops from House Harkonnen, sworn enemies of the Atreides.
+After the fall of Padishah Emperor Shaddam Corrino IV and Paul's ascension to the Imperial throne, Paul's Fremen forces are engaged on multiple fronts, fighting the Houses that refuse to recognize Atreides rule.
+#+end_example
